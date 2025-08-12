@@ -5,6 +5,48 @@
     <title>mi tienda de Skebops</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="estilo.css">
+    <style>
+        .cart-sidebar {
+            width: 300px;
+            position: fixed;
+            top: 0;
+            right: -300px; /* Initially hidden */
+            height: 100%;
+            background-color: #f0f0f0;
+            overflow-y: auto;
+            transition: right 0.3s ease-in-out;
+            padding: 20px;
+            box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
+            right: -300px; /* Ensure it's fully hidden initially */
+            display: none; /*Ocultar la barra lateral inicialmente*/
+        }
+
+        .cart-sidebar.open {
+            right: 0; /* Slide in when open */
+            display: block; /* Mostrar cuando la clase 'open' está presente */
+        }
+
+        .cart-item {
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+            display: flex; /* Added for image alignment */
+            align-items: center; /* Vertically align items */
+        }
+
+        .cart-item img {
+            width: 50px; /* Adjust as needed */
+            height: 50px; /* Adjust as needed */
+            margin-right: 10px; /* Space between image and text */
+        }
+
+
+        .cart-total {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -13,6 +55,7 @@
             <ul>
                 <li><a href="#">Inventario</a></li>
                 <li><a href="#">Tienda</a></li>
+                <li style="float:right"><a href="#" onclick="toggleCart()">Carrito</a></li>
             </ul>
         </nav>
     </header>
@@ -26,20 +69,82 @@
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGHmt-YYD_vC3HZMAiRvj--XRx7nPc1ydInA&s" alt="Imagen skebop">
                 <h3>titulo 1</h3>
                 <p class="precio">$41.00</p>
+                <button onclick="addToCart('titulo 1', 41.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGHmt-YYD_vC3HZMAiRvj--XRx7nPc1ydInA&s')">Añadir al carrito</button>
             </div>
 
             <div class="producto">
                 <img src="https://via.placeholder.com/200x200" alt="Imagen del producto">
                 <h3>Título  2</h3>
                 <p class="precio">$41.00</p>
+                <button onclick="addToCart('Título  2', 41.00, 'https://via.placeholder.com/200x200')">Añadir al carrito</button>
             </div>
 
             <div class="producto">
                 <img src="https://via.placeholder.com/200x200" alt="Imagen del producto">
                 <h3>Título  3</h3>
                 <p class="precio">$41.00</p>
+                <button onclick="addToCart('Título  3', 41.00, 'https://via.placeholder.com/200x200')">Añadir al carrito</button>
             </div>
         </div>
     </main>
+
+    <div class="cart-sidebar" id="cartSidebar">
+        <h2>Carrito de Compras</h2>
+        <div id="cartItems">
+            <!-- Cart items will be added here dynamically -->
+        </div>
+        <div class="cart-total" id="cartTotal">
+            Total: $0.00
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+
+        function addToCart(productName, productPrice, productImage) {
+            const item = {
+                name: productName,
+                price: productPrice,
+                image: productImage
+            };
+            cart.push(item);
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartTotalDiv = document.getElementById('cartTotal');
+            let cartTotal = 0;
+
+            // Clear existing cart items
+            cartItemsDiv.innerHTML = '';
+
+            // Add each item to the cart display
+            cart.forEach((item, index) => {
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.classList.add('cart-item');
+                cartItemDiv.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <span>${item.name} - $${item.price.toFixed(2)}</span>
+                    <button onclick="removeFromCart(${index})">Eliminar</button>
+                `;
+                cartItemsDiv.appendChild(cartItemDiv);
+                cartTotal += item.price;
+            });
+
+            // Update the total
+            cartTotalDiv.textContent = `Total: $${cartTotal.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function toggleCart() {
+            const cartSidebar = document.getElementById('cartSidebar');
+            cartSidebar.classList.toggle('open');
+        }
+    </script>
 </body>
 </html>
