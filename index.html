@@ -2,104 +2,390 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>mi tienda de Skebops</title>
+    <title>Tienda de Skebops</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="estilo.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        .cart-sidebar {
-            width: 300px;
-            position: fixed;
-            top: 0;
-            right: -300px; /* Initially hidden */
-            height: 100%;
-            background-color: #f0f0f0;
-            overflow-y: auto;
-            transition: right 0.3s ease-in-out;
-            padding: 20px;
-            box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
-            right: -300px; /* Ensure it's fully hidden initially */
-            display: none; /*Ocultar la barra lateral inicialmente*/
+        :root {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --primary-color: #6a0dad; /* Púrpura */
+            --accent-color: #bb86fc;
+            --card-bg-color: #1e1e1e;
+            --border-color: #444;
         }
 
-        .cart-sidebar.open {
-            right: 0; /* Slide in when open */
-            display: block; /* Mostrar cuando la clase 'open' está presente */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        header {
+            height: 80vh; /* Altura del 80% del viewport */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+            color: #fff;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 8vw, 5rem);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        header p {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            margin-top: 10px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(18, 18, 18, 0.9);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .navbar .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar ul li {
+            margin-left: 2rem;
+        }
+
+        .navbar ul li a, .navbar button {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .navbar ul li a:hover, .navbar button:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .main-content {
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            color: var(--accent-color);
+        }
+
+        .productos-container-wrapper {
+            overflow-x: auto;
+            padding: 20px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .productos-container-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .productos-container-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .productos-container-wrapper::-webkit-scrollbar-track {
+            background: var(--card-bg-color);
+        }
+
+        .productos-container {
+            display: flex;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .producto {
+            flex: 0 0 280px;
+            background-color: var(--card-bg-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .producto:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .producto img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .producto-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .producto h3 {
+            font-size: 1.25rem;
+            margin-bottom: 5px;
+        }
+
+        .producto .precio {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .producto button {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .producto button:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg-color);
+            margin: auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-button {
+            color: var(--text-color);
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover, .close-button:focus {
+            color: var(--accent-color);
         }
 
         .cart-item {
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #ccc;
-            display: flex; /* Added for image alignment */
-            align-items: center; /* Vertically align items */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
         }
 
         .cart-item img {
-            width: 50px; /* Adjust as needed */
-            height: 50px; /* Adjust as needed */
-            margin-right: 10px; /* Space between image and text */
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
         }
 
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-details h4 {
+            font-size: 1rem;
+        }
+
+        .item-details span {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .remove-btn {
+            background-color: #d32f2f;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .remove-btn:hover {
+            background-color: #b71c1c;
+        }
 
         .cart-total {
             margin-top: 20px;
+            font-size: 1.2rem;
             font-weight: bold;
+            text-align: right;
         }
-    </style>
 
+    </style>
 </head>
 
 <body>
+
+    <nav class="navbar">
+        <div class="logo">Skebops</div>
+        <ul>
+            <li><a href="#">Tienda</a></li>
+            <li><button onclick="toggleModal()">🛒 Carrito</button></li>
+        </ul>
+    </nav>
+
     <header>
-        <nav>
-            <ul>
-                <li><a href="#">Inventario</a></li>
-                <li><a href="#">Tienda</a></li>
-                <li style="float:right"><a href="#" onclick="toggleCart()">Carrito</a></li>
-            </ul>
-        </nav>
+        <h1>¡La Tienda Definitiva de Skebops!</h1>
+        <p>Encuentra tus favoritos. Desliza para explorar.</p>
+        <div class="scroll-indicator">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+        </div>
     </header>
 
-    <main>
-        <h1>Tienda de Skebops</h1>
-        <p>skebops dea</p> 
-
-        <div class="productos-container">
-            <div class="producto">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGHmt-YYD_vC3HZMAiRvj--XRx7nPc1ydInA&s" alt="Imagen skebop">
-                <h3>titulo 1</h3>
-                <p class="precio">$41.00</p>
-                <button onclick="addToCart('titulo 1', 41.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGHmt-YYD_vC3HZMAiRvj--XRx7nPc1ydInA&s')">Añadir al carrito</button>
-            </div>
-
-            <div class="producto">
-                <img src="https://via.placeholder.com/200x200" alt="Imagen del producto">
-                <h3>Título  2</h3>
-                <p class="precio">$41.00</p>
-                <button onclick="addToCart('Título  2', 41.00, 'https://via.placeholder.com/200x200')">Añadir al carrito</button>
-            </div>
-
-            <div class="producto">
-                <img src="https://via.placeholder.com/200x200" alt="Imagen del producto">
-                <h3>Título  3</h3>
-                <p class="precio">$41.00</p>
-                <button onclick="addToCart('Título  3', 41.00, 'https://via.placeholder.com/200x200')">Añadir al carrito</button>
-            </div>
+    <main class="main-content">
+        <h2 class="section-title">Mi tienda de skebops</h2>
+        <div class="productos-container-wrapper">
+            <div class="productos-container" id="productosContainer">
+                </div>
         </div>
     </main>
 
-    <div class="cart-sidebar" id="cartSidebar">
-        <h2>Carrito de Compras</h2>
-        <div id="cartItems">
-            <!-- Cart items will be added here dynamically -->
-        </div>
-        <div class="cart-total" id="cartTotal">
-            Total: $0.00
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="toggleModal()">&times;</span>
+            <h2>Tu Carrito</h2>
+            <div id="cartItems">
+                </div>
+            <div class="cart-total" id="cartTotal">
+                Total: $0.00
+            </div>
         </div>
     </div>
 
     <script>
         let cart = [];
+
+        const products = [
+            { name: "Skebop Clásico", price: 41.00, image: "https://i1.sndcdn.com/artworks-KEfB0OoBZtQvivLO-6mJK3w-t500x500.png" },
+            { name: "Skebop Raro", price: 45.50, image: "https://i.scdn.co/image/ab67616d00001e022a59c9a295285a44a48aa772" },
+            { name: "Skebop Premium", price: 60.00, image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/01/42/52/014252a0-f2dd-28eb-fe2a-98efed246542/artwork.jpg/600x600bf-60.jpg" },
+            { name: "Skebop Edición Limitada", price: 75.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTvF66JIUafhuxDNzYzctq6O8zkistnCqgrMlDlpMe_91GHqgzp03pX7xn_FGvkBJXBGo&usqp=CAU" },
+            { name: "Skebop Gamer", price: 55.00, image: "https://art.ngfiles.com/images/6869000/6869844_2216213_awoked-from-you8_untitled-6869844.d9f07b1315a173504060a1759a3d464b.webp?f1752693664" }
+        ];
+
+        function renderProducts() {
+            const productosContainer = document.getElementById('productosContainer');
+            productosContainer.innerHTML = '';
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('producto');
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="Imagen de ${product.name}">
+                    <div class="producto-info">
+                        <h3>${product.name}</h3>
+                        <p class="precio">$${product.price.toFixed(2)}</p>
+                        <button onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Añadir al carrito</button>
+                    </div>
+                `;
+                productosContainer.appendChild(productDiv);
+            });
+        }
 
         function addToCart(productName, productPrice, productImage) {
             const item = {
@@ -116,23 +402,23 @@
             const cartTotalDiv = document.getElementById('cartTotal');
             let cartTotal = 0;
 
-            // Clear existing cart items
             cartItemsDiv.innerHTML = '';
 
-            // Add each item to the cart display
             cart.forEach((item, index) => {
                 const cartItemDiv = document.createElement('div');
                 cartItemDiv.classList.add('cart-item');
                 cartItemDiv.innerHTML = `
                     <img src="${item.image}" alt="${item.name}">
-                    <span>${item.name} - $${item.price.toFixed(2)}</span>
-                    <button onclick="removeFromCart(${index})">Eliminar</button>
+                    <div class="item-details">
+                        <h4>${item.name}</h4>
+                        <span>$${item.price.toFixed(2)}</span>
+                    </div>
+                    <button class="remove-btn" onclick="removeFromCart(${index})">Eliminar</button>
                 `;
                 cartItemsDiv.appendChild(cartItemDiv);
                 cartTotal += item.price;
             });
 
-            // Update the total
             cartTotalDiv.textContent = `Total: $${cartTotal.toFixed(2)}`;
         }
 
@@ -141,10 +427,13 @@
             updateCartDisplay();
         }
 
-        function toggleCart() {
-            const cartSidebar = document.getElementById('cartSidebar');
-            cartSidebar.classList.toggle('open');
+        function toggleModal() {
+            const modal = document.getElementById('cartModal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
         }
+
+        // Inicializa los productos al cargar la página
+        window.onload = renderProducts;
     </script>
 </body>
 </html>
