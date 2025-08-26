@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Inventario de Skebops</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Importación skebops marroquis</div>
+        <ul>
+            <li><a href="index.html">Tienda</a></li>
+            <li><a href="inventario.html">📦 Inventario</a></li>
+        </ul>
+    </nav>
+    <main class="main-content">
+        <h2 class="section-title">Mi Inventario</h2>
+        <div class="productos-container-wrapper">
+            <div class="productos-container" id="inventoryContainer">
+            </div>
+        </div>
+    </main>
+    <script>
+        // Aquí irá el JavaScript para cargar y mostrar el inventario.
+        // Se necesita una forma de guardar los datos entre páginas, como localStorage.
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        
+        function renderInventory() {
+            const inventoryContainer = document.getElementById('inventoryContainer');
+            inventoryContainer.innerHTML = '';
+            
+            if (inventory.length === 0) {
+                inventoryContainer.innerHTML = '<p class="empty-message">Tu inventario está vacío. ¡Compra algunos skebops!</p>';
+                return;
+            }
+
+            inventory.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('producto');
+                itemDiv.innerHTML = `
+                    <img src="${item.image}" alt="Imagen de ${item.name}">
+                    <div class="producto-info">
+                        <h3>${item.name}</h3>
+                        <p class="precio">$${item.price.toFixed(2)}</p>
+                    </div>
+                `;
+                inventoryContainer.appendChild(itemDiv);
+            });
+        }
+        window.onload = renderInventory;
+    </script>
+</body>
+</html>

@@ -21,6 +21,7 @@
         <div class="logo">Importación skebops marroquis</div>
         <ul>
             <li><a href="#">Tienda</a></li>
+             <li><a href="inventario.html">📦 Inventario</a></li>
             <li><button onclick="toggleModal()">🛒 Carrito</button></li>
         </ul>
     </nav>
@@ -43,6 +44,7 @@
         </div>
     </main>
 
+
     <div id="cartModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="toggleModal()">&times;</span>
@@ -52,6 +54,10 @@
             <div class="cart-total" id="cartTotal">
                 Total: $0.00
             </div>
+            <button class="buy-button" onclick="buyItems()">Comprar</button>
+        </div>
+        
+
         </div>
     </div>
 
