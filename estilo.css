@@ -347,3 +347,23 @@ header p {
     margin-top: 20px;
     font-weight: bold;
 }
+
+ #videoOverlay {
+            display: none; /* Oculto por defecto */
+            position: fixed; /* Fijo en la ventana del navegador */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Fondo semitransparente oscuro */
+            z-index: 9999; /* Asegura que esté por encima de todo lo demás */
+            justify-content: center; /* Centra el video horizontalmente */
+            align-items: center; /* Centra el video verticalmente */
+            overflow: hidden; /* Evita barras de desplazamiento */
+        }
+
+        #videoOverlay iframe {
+            width: 90%; /* Ajusta el ancho del video */
+            height: 90%; /* Ajusta la altura del video */
+            border: none; /* Sin borde */
+        }
