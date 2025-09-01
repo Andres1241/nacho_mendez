@@ -7,21 +7,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Css\estilo.css">
+    <link rel="stylesheet" href="Css\estilo.css">
     
 </head>
 
 <body>
  
-   <div id="videoOverlay"></div>
-
-    <script src="Js\script.js"></script>
+    <div id="videoOverlay"></div>
 
     <nav class="navbar">
         <div class="logo">Importación skebops marroquis</div>
         <ul>
             <li><a href="#">Tienda</a></li>
-             <li><a href="inventario.html">📦 Inventario</a></li>
+            <li><a href="inventario.html">📦 Inventario</a></li>
+            <li id="auth-buttons">
+                <button onclick="showLoginModal()">Iniciar Sesión</button>
+            </li>
+            <li id="user-info" style="display:none;">
+                <span id="welcome-message"></span>
+                <button onclick="logout()">Cerrar Sesión</button>
+            </li>
             <li><button onclick="toggleModal()">🛒 Carrito</button></li>
         </ul>
     </nav>
@@ -40,26 +45,44 @@
         <h2 class="section-title">Mi tienda de skebops</h2>
         <div class="productos-container-wrapper">
             <div class="productos-container" id="productosContainer">
-                </div>
+            </div>
         </div>
     </main>
-
 
     <div id="cartModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="toggleModal()">&times;</span>
             <h2>Tu Carrito</h2>
             <div id="cartItems">
-                </div>
+            </div>
             <div class="cart-total" id="cartTotal">
                 Total: $0.00
             </div>
             <button class="buy-button" onclick="buyItems()">Comprar</button>
         </div>
-        
+    </div>
 
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideAuthModal()">&times;</span>
+            <div id="loginForm">
+                <h2>Iniciar Sesión</h2>
+                <input type="text" id="loginUsername" placeholder="Nombre de usuario" required>
+                <input type="password" id="loginPassword" placeholder="Contraseña" required>
+                <button onclick="login()">Iniciar Sesión</button>
+                <p>¿No tienes una cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a></p>
+            </div>
+            <div id="registerForm" style="display:none;">
+                <h2>Registrarse</h2>
+                <input type="text" id="registerUsername" placeholder="Nombre de usuario" required>
+                <input type="password" id="registerPassword" placeholder="Contraseña" required>
+                <button onclick="register()">Registrarse</button>
+                <p>¿Ya tienes una cuenta? <a href="#" onclick="showLoginForm()">Inicia sesión aquí</a></p>
+            </div>
         </div>
     </div>
+    
+    <script src="Js\script.js"></script>
 
 </body>
 </html>

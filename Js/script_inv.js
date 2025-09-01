@@ -1,11 +1,7 @@
-// Elimina la lógica de localStorage
-// let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        
 function renderInventory() {
     const inventoryContainer = document.getElementById('inventoryContainer');
     inventoryContainer.innerHTML = '';
-
-    // Obtiene el inventario desde el servidor
+    
     fetch('api.php?action=get')
         .then(response => {
             if (!response.ok) {
@@ -13,7 +9,8 @@ function renderInventory() {
             }
             return response.json();
         })
-        .then(inventory => {
+        .then(data => {
+            const inventory = data.items;
             if (inventory.length === 0) {
                 inventoryContainer.innerHTML = '<p class="empty-message">Tu inventario está vacío. ¡Compra algunos skebops!</p>';
                 return;
@@ -34,9 +31,8 @@ function renderInventory() {
         })
         .catch(error => {
             console.error('Error fetching inventory:', error);
-            inventoryContainer.innerHTML = '<p class="empty-message">Error al cargar el inventario.</p>';
+            inventoryContainer.innerHTML = '<p class="empty-message">Error al cargar el inventario. Asegúrate de haber iniciado sesión.</p>';
         });
 }
 
-// Llama a la función al cargar la página
 window.onload = renderInventory;

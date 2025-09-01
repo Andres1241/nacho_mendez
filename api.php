@@ -1,29 +1,64 @@
 <?php
+session_start();
 header('Content-Type: application/json');
-// Reemplaza estos datos con tus credenciales si no usas la configuración por defecto
+
 $servername = "localhost";
 $username = "root"; 
 $password = ""; 
 $dbname = "skebops_db";
 
-// Crea la conexión a la base de datos
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Verifica si la conexión falló
 if ($conn->connect_error) {
     die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));
 }
 
 $action = $_GET['action'] ?? '';
 
-if ($action === 'add') {
-    // Si la acción es 'add', inserta un nuevo producto en la base de datos
+if ($action === 'register') {
+    $data = json_decode(file_get_contents("php://input"));
+    $username = $conn->real_escape_string($data->username);
+    $password = password_hash($data->password, PASSWORD_DEFAULT);
+
+    $sql = "INSERT INTO users (username, password) VALUES ('$username', '$password')";
+    
+    if ($conn->query($sql) === TRUE) {
+        echo json_encode(["message" => "User registered successfully"]);
+    } else {
+        echo json_encode(["error" => "Error: " . $sql . "<br>" . $conn->error]);
+    }
+} elseif ($action === 'login') {
+    $data = json_decode(file_get_contents("php://input"));
+    $username = $conn->real_escape_string($data->username);
+    $password = $data->password;
+
+    $sql = "SELECT id, password FROM users WHERE username = '$username'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if (password_verify($password, $row['password'])) {
+            $_SESSION['user_id'] = $row['id'];
+            echo json_encode(["message" => "Login successful"]);
+        } else {
+            echo json_encode(["error" => "Invalid username or password"]);
+        }
+    } else {
+        echo json_encode(["error" => "Invalid username or password"]);
+    }
+} elseif ($action === 'add') {
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode(["error" => "Not logged in"]);
+        exit;
+    }
+    
+    $user_id = $_SESSION['user_id'];
     $data = json_decode(file_get_contents("php://input"));
     $name = $conn->real_escape_string($data->name);
     $price = $data->price;
     $image = $conn->real_escape_string($data->image);
 
-    $sql = "INSERT INTO inventory (name, price, image) VALUES ('$name', $price, '$image')";
+    $sql = "INSERT INTO inventory (name, price, image, user_id) VALUES ('$name', $price, '$image', $user_id)";
     
     if ($conn->query($sql) === TRUE) {
         echo json_encode(["message" => "New record created successfully"]);
@@ -31,8 +66,13 @@ if ($action === 'add') {
         echo json_encode(["error" => "Error: " . $sql . "<br>" . $conn->error]);
     }
 } elseif ($action === 'get') {
-    // Si la acción es 'get', recupera todos los productos
-    $sql = "SELECT id, name, price, image FROM inventory";
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode(["items" => []]);
+        exit;
+    }
+
+    $user_id = $_SESSION['user_id'];
+    $sql = "SELECT id, name, price, image FROM inventory WHERE user_id = $user_id";
     $result = $conn->query($sql);
     $items = [];
 
@@ -41,7 +81,10 @@ if ($action === 'add') {
             $items[] = $row;
         }
     }
-    echo json_encode($items);
+    echo json_encode(["items" => $items]);
+} elseif ($action === 'logout') {
+    session_destroy();
+    echo json_encode(["message" => "Logged out successfully"]);
 }
 
 $conn->close();
