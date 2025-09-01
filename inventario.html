@@ -24,34 +24,6 @@
             </div>
         </div>
     </main>
-    <script>
-        // Aquí irá el JavaScript para cargar y mostrar el inventario.
-        // Se necesita una forma de guardar los datos entre páginas, como localStorage.
-        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        
-        function renderInventory() {
-            const inventoryContainer = document.getElementById('inventoryContainer');
-            inventoryContainer.innerHTML = '';
-            
-            if (inventory.length === 0) {
-                inventoryContainer.innerHTML = '<p class="empty-message">Tu inventario está vacío. ¡Compra algunos skebops!</p>';
-                return;
-            }
-
-            inventory.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.classList.add('producto');
-                itemDiv.innerHTML = `
-                    <img src="${item.image}" alt="Imagen de ${item.name}">
-                    <div class="producto-info">
-                        <h3>${item.name}</h3>
-                        <p class="precio">$${item.price.toFixed(2)}</p>
-                    </div>
-                `;
-                inventoryContainer.appendChild(itemDiv);
-            });
-        }
-        window.onload = renderInventory;
-    </script>
+ <script src="Js\script_inv.js"></script>
 </body>
 </html>

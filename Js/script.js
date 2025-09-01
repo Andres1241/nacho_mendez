@@ -3,9 +3,10 @@
         const products = [
             { name: "Skebop Clásico", price: 41.00, image: "https://i1.sndcdn.com/artworks-KEfB0OoBZtQvivLO-6mJK3w-t500x500.png" },
             { name: "Skebop Raro", price: 45.50, image: "https://i.scdn.co/image/ab67616d00001e022a59c9a295285a44a48aa772" },
+            { name: "Skebop Formidable", price: 55.00, image: "https://pbs.twimg.com/amplify_video_thumb/1944283699236794368/img/StWN9U6ebwRg28Lw.jpg:large" },
             { name: "Skebop Premium", price: 60.00, image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/01/42/52/014252a0-f2dd-28eb-fe2a-98efed246542/artwork.jpg/600x600bf-60.jpg" },
             { name: "24K Gold Skebop ", price: 75.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTvF66JIUafhuxDNzYzctq6O8zkistnCqgrMlDlpMe_91GHqgzp03pX7xn_FGvkBJXBGo&usqp=CAU" },
-            { name: "Skebop Formidable", price: 55.00, image: "https://pbs.twimg.com/amplify_video_thumb/1944283699236794368/img/StWN9U6ebwRg28Lw.jpg:large" }
+
         ];
 
         function renderProducts() {
@@ -19,22 +20,33 @@
                     <div class="producto-info">
                         <h3>${product.name}</h3>
                         <p class="precio">$${product.price.toFixed(2)}</p>
-                        <button onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Añadir al carrito</button>
+                        <button onclick="addToCart('${product.name}', ${product.price}, '${product.image}', this)">Añadir al carrito</button>
                     </div>
                 `;
                 productosContainer.appendChild(productDiv);
             });
         }
 
-        function addToCart(productName, productPrice, productImage) {
-            const item = {
-                name: productName,
-                price: productPrice,
-                image: productImage
-            };
-            cart.push(item);
-            updateCartDisplay();
-        }
+   
+        function addToCart(productName, productPrice, productImage, button) {
+    const item = {
+        name: productName,
+        price: productPrice,
+        image: productImage
+    };
+    cart.push(item);
+    updateCartDisplay();
+
+    // Aplica la clase para cambiar el color al boton
+    button.classList.add('btn-agregado');
+    button.textContent = '¡Agregado!'; // Cambia el texto del botón
+
+    // Vuelve el botón a su estado original después de 1000 milisegundos (1 segundo)
+    setTimeout(() => {
+        button.classList.remove('btn-agregado');
+        button.textContent = 'Añadir al carrito'; // Restaura el texto original
+    }, 1000);
+}
 
         function updateCartDisplay() {
             const cartItemsDiv = document.getElementById('cartItems');
@@ -75,10 +87,41 @@
         window.onload = renderProducts;
 
 
+        function buyItems() {
+    // Loop through each item in the cart and send it to the server
+    cart.forEach(item => {
+        fetch('api.php?action=add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+
+    // Clear the cart after sending to the database
+    cart = [];
+    updateCartDisplay();
+    alert('Compra realizada con éxito. ¡Revisa tu inventario!');
+    toggleModal(); 
+}
 
 
 
 
+
+
+
+
+
+        //JOSH HUTCERSHON
 // Genera un número aleatorio entre 0 y 1
 const randomNumber = Math.random();
 

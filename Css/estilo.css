@@ -398,3 +398,9 @@ header p {
     background-color: var(--primary-color);
     color: #fff;
 }
+
+.btn-agregado {
+    background-color: #4CAF50 !important; /* Un verde vibrante */
+    color: white;
+    transition: background-color 0.3s ease; /* Transición para el cambio de color */
+}
