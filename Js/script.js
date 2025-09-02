@@ -2,12 +2,11 @@ let cart = [];
 let isLoggedIn = false;
 
 const products = [
-    { name: "Skebop Clásico", price: 41.00, image: "https://i1.sndcdn.com/artworks-KEfB0OoBZtQvivLO-6mJK3w-t500x500.png" },
-    { name: "Skebop Raro", price: 45.50, image: "https://i.scdn.co/image/ab67616d00001e022a59c9a295285a44a48aa772" },
-    { name: "Skebop Formidable", price: 55.00, image: "https://pbs.twimg.com/amplify_video_thumb/1944283699236794368/img/StWN9U6ebwRg28Lw.jpg:large" },
-    { name: "Skebop Premium", price: 60.00, image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/01/42/52/014252a0-f2dd-28eb-fe2a-98efed246542/artwork.jpg/600x600bf-60.jpg" },
-    { name: "24K Gold Skebop ", price: 75.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTvF66JIUafhuxDNzYzctq6O8zkistnCqgrMlDlpMe_91GHqgzp03pX7xn_FGvkBJXBGo&usqp=CAU" },
-
+    { name: "Skebop Clásico", price: 41.00, image: "https://i1.sndcdn.com/artworks-KEfB0OoBZtQvivLO-6mJK3w-t500x500.png", earningRate: 0.01 },
+    { name: "Skebop Raro", price: 45.50, image: "https://i.scdn.co/image/ab67616d00001e022a59c9a295285a44a48aa772", earningRate: 0.02 },
+    { name: "Skebop Formidable", price: 55.00, image: "https://pbs.twimg.com/amplify_video_thumb/1944283699236794368/img/StWN9U6ebwRg28Lw.jpg:large", earningRate: 0.05 },
+    { name: "Skebop Premium", price: 60.00, image: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/01/42/52/014252a0-f2dd-28eb-fe2a-98efed246542/artwork.jpg/600x600bf-60.jpg", earningRate: 0.08 },
+    { name: "24K Gold Skebop ", price: 75.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTvF66JIUafhuxDNzYzctq6O8zkistnCqgrMlDlpMe_91GHqgzp03pX7xn_FGvkBJXBGo&usqp=CAU", earningRate: 0.15 },
 ];
 
 function renderProducts() {
@@ -21,14 +20,14 @@ function renderProducts() {
             <div class="producto-info">
                 <h3>${product.name}</h3>
                 <p class="precio">$${product.price.toFixed(2)}</p>
-                <button onclick="addToCart('${product.name}', ${product.price}, '${product.image}', this)">Añadir al carrito</button>
+                <button onclick="addToCart('${product.name}', ${product.price}, '${product.image}', ${product.earningRate}, this)">Añadir al carrito</button>
             </div>
         `;
         productosContainer.appendChild(productDiv);
     });
 }
 
-function addToCart(productName, productPrice, productImage, button) {
+function addToCart(productName, productPrice, productImage, earningRate, button) {
     if (!isLoggedIn) {
         alert("Debes iniciar sesión para añadir productos al carrito.");
         showLoginModal();
@@ -37,7 +36,8 @@ function addToCart(productName, productPrice, productImage, button) {
     const item = {
         name: productName,
         price: productPrice,
-        image: productImage
+        image: productImage,
+        earningRate: earningRate
     };
     cart.push(item);
     updateCartDisplay();
@@ -107,7 +107,12 @@ function buyItems() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(item),
+            body: JSON.stringify({
+                name: item.name,
+                price: item.price,
+                image: item.image,
+                earningRate: item.earningRate
+            }),
         })
         .then(response => response.json())
         .then(data => {
@@ -210,19 +215,17 @@ function updateNavUI() {
     }
 }
 
-// Inicializa el estado de la sesión al cargar la página
 window.onload = () => {
     isLoggedIn = !!localStorage.getItem('username');
     updateNavUI();
     renderProducts();
-    
-    // Aquí la lógica del video de Josh Hutcherson, si la quieres mantener
+
     const randomNumber = Math.random();
     const videoOverlay = document.getElementById('videoOverlay');
     const originalVideoLink = "https://www.youtube.com/watch?v=BbeeuzU5Qc8";
     const embedVideoLink = originalVideoLink.replace("watch?v=", "embed/") + "?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0";
     const joshVideoIframe = `<iframe src="${embedVideoLink}" title="Video de Josh Hutcherson" frameborder="0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-    
+
     if (randomNumber < 0.33) {
         videoOverlay.innerHTML = joshVideoIframe;
         videoOverlay.style.display = 'flex';
