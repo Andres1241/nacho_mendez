@@ -1,0 +1,223 @@
+/* Variables de color (asegúrate de que estas estén definidas en tu :root) */
+:root {
+    --primary-color: #9b59b6; /* Morado vibrante */
+    --secondary-color: #34495e; /* Azul grisáceo oscuro */
+    --background-color: #1a1a1a; /* Fondo muy oscuro */
+    --card-bg-color: #2c2c2c; /* Fondo de tarjetas ligeramente más claro */
+    --text-color: #f8f9fa; /* Texto blanco */
+    --text-color-light: #ced4da; /* Texto gris claro */
+    --border-color: #495057; /* Borde para elementos */
+}
+
+/* Estilos globales */
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    display: flex; /* Usar flexbox para el diseño principal */
+    flex-direction: column; /* Apilar elementos verticalmente */
+    min-height: 100vh; /* Asegura que el cuerpo ocupe al menos el alto de la ventana */
+}
+
+/* Barra de Navegación */
+.navbar {
+     position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(18, 18, 18, 0.9);
+    backdrop-filter: blur(5px);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 10;
+    padding: 0;
+    display: flex;
+    /* Reducir el espacio entre los elementos */
+    gap: 1rem; 
+}
+
+.navbar ul li a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    /* Reducir el padding horizontal */
+    padding: 0.5rem 0.6rem; 
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar ul li a:hover,
+.navbar ul li a.active {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+/* Contenido Principal */
+.main-content {
+    flex-grow: 1; /* Permite que el contenido principal ocupe el espacio restante */
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box; /* Incluir padding en el ancho */
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 3rem;
+    text-shadow: 0 0 10px rgba(155, 89, 182, 0.5); /* Sombra para el título */
+}
+
+/* Ranking de Skebops */
+.ranking-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas responsivas */
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.user-card {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 1px solid var(--border-color);
+}
+
+.user-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.user-header .position {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-right: 15px;
+    background: #333;
+    padding: 5px 12px;
+    border-radius: 8px;
+    line-height: 1;
+}
+
+.user-header .username {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.user-stats p {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--text-color-light);
+}
+
+.user-stats p strong {
+    color: var(--primary-color);
+}
+
+.inventory-section {
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+.inventory-section h4 {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.skebop-list-container {
+    overflow-x: auto;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) #555;
+}
+
+/* Estilo para la barra de desplazamiento en Webkit (Chrome, Safari) */
+.skebop-list-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.skebop-list-container::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 10px;
+}
+
+.skebop-list-container::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    border: 2px solid #333;
+}
+
+
+.skebop-list {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+}
+
+.skebop-item {
+    flex-shrink: 0;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    border: 1px solid #444;
+}
+
+.skebop-item span:first-child {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.skebop-item span:last-child {
+    font-size: 0.9em;
+    color: var(--text-color-light);
+}
+
+.no-skebops, .no-data, .error-message {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-color-light);
+    margin-top: 20px;
+}
+
