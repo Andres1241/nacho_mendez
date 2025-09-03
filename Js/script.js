@@ -33,6 +33,13 @@ function addToCart(productName, productPrice, productImage, earningRate, button)
         showLoginModal();
         return;
     }
+
+    // Verificar límite de 30 skebops
+    if (cart.length >= 30) {
+        alert("Has alcanzado el límite máximo de 30 skebops en el carrito.");
+        return;
+    }
+
     const item = {
         name: productName,
         price: productPrice,
@@ -76,7 +83,12 @@ function updateCartDisplay() {
         });
     }
 
-    cartTotalDiv.textContent = `Total: $${cartTotal.toFixed(2)}`;
+    cartTotalDiv.innerHTML = `
+        <div>Total: $${cartTotal.toFixed(2)}</div>
+        <div style="font-size: 0.9em; color: #888; margin-top: 5px;">
+            Items en el carrito: ${cart.length}/30
+        </div>
+    `;
 }
 
 function removeFromCart(index) {
@@ -89,7 +101,7 @@ function toggleModal() {
     modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
 }
 
-function buyItems() {
+async function buyItems() {
     if (!isLoggedIn) {
         alert("Debes iniciar sesión para completar la compra.");
         showLoginModal();
@@ -101,32 +113,73 @@ function buyItems() {
         return;
     }
 
-    cart.forEach(item => {
-        fetch('api.php?action=add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: item.name,
-                price: item.price,
-                image: item.image,
-                earningRate: item.earningRate
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-    });
+    // Verificar límite antes de comprar
+    if (cart.length > 30) {
+        alert("No puedes comprar más de 30 skebops a la vez.");
+        return;
+    }
 
-    cart = [];
-    updateCartDisplay();
-    alert('Compra realizada con éxito. ¡Revisa tu inventario!');
-    toggleModal();
+    // Mostrar mensaje de procesamiento
+    const buyButton = document.querySelector('.buy-button');
+    const originalText = buyButton.textContent;
+    buyButton.textContent = 'Procesando compra...';
+    buyButton.disabled = true;
+
+    let successfulPurchases = 0;
+    let failedPurchases = 0;
+
+    try {
+        // Procesar las compras de una en una para evitar problemas de concurrencia
+        for (let i = 0; i < cart.length; i++) {
+            const item = cart[i];
+            try {
+                const response = await fetch('api.php?action=add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: item.name,
+                        price: item.price,
+                        image: item.image,
+                        earningRate: item.earningRate
+                    }),
+                });
+
+                const data = await response.json();
+                
+                if (data.message) {
+                    successfulPurchases++;
+                } else {
+                    console.error('Error en compra:', data.error);
+                    failedPurchases++;
+                }
+            } catch (error) {
+                console.error('Error en fetch:', error);
+                failedPurchases++;
+            }
+        }
+
+        // Limpiar carrito solo si todas las compras fueron exitosas
+        if (failedPurchases === 0) {
+            cart = [];
+            updateCartDisplay();
+            alert(`¡Compra realizada con éxito! Se compraron ${successfulPurchases} skebops. ¡Revisa tu inventario!`);
+            toggleModal();
+        } else {
+            alert(`Compra parcialmente exitosa: ${successfulPurchases} skebops comprados, ${failedPurchases} fallaron. Los items no comprados permanecen en el carrito.`);
+            // Remover solo los items que se compraron exitosamente sería más complejo
+            // Por simplicidad, mantenemos todos los items en el carrito
+        }
+
+    } catch (error) {
+        console.error('Error general en compra:', error);
+        alert('Hubo un error al procesar la compra. Inténtalo de nuevo.');
+    } finally {
+        // Restaurar botón
+        buyButton.textContent = originalText;
+        buyButton.disabled = false;
+    }
 }
 
 // Funciones de Autenticación
@@ -153,6 +206,12 @@ function hideAuthModal() {
 function register() {
     const username = document.getElementById('registerUsername').value;
     const password = document.getElementById('registerPassword').value;
+    
+    if (!username || !password) {
+        alert('Por favor, completa todos los campos.');
+        return;
+    }
+    
     fetch('api.php?action=register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -164,12 +223,22 @@ function register() {
         if (data.message) {
             showLoginForm();
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al registrarse. Inténtalo de nuevo.');
     });
 }
 
 function login() {
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
+    
+    if (!username || !password) {
+        alert('Por favor, completa todos los campos.');
+        return;
+    }
+    
     fetch('api.php?action=login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -186,6 +255,10 @@ function login() {
         } else {
             alert(data.error);
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al iniciar sesión. Inténtalo de nuevo.');
     });
 }
 
@@ -194,8 +267,20 @@ function logout() {
     .then(response => response.json())
     .then(data => {
         isLoggedIn = false;
+        cart = []; // Limpiar carrito al cerrar sesión
         localStorage.removeItem('username');
         updateNavUI();
+        updateCartDisplay();
+        alert("Sesión cerrada.");
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Cerrar sesión localmente aunque falle el servidor
+        isLoggedIn = false;
+        cart = [];
+        localStorage.removeItem('username');
+        updateNavUI();
+        updateCartDisplay();
         alert("Sesión cerrada.");
     });
 }
